@@ -1,0 +1,138 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Bird, Waves, Info, ChevronRight, ExternalLink, Droplets, Thermometer, Microscope, MapPin, Wind } from 'lucide-react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+const BIRDS = [
+  { name: "Ruddy Shelduck", scientific: "Tadorna ferruginea", description: "Super common at Lonar – loves the brine shrimp that explode in alkaline water.", image: "bird1.jpg", adaptation: "Salt glands & gut microbes" },
+  { name: "Black-winged Stilt", scientific: "Himantopus himantopus", description: "Long pink legs let it wade safely in pH 11 water without burning its skin.", image: "bird2.jpg", adaptation: "Leathery leg scales" },
+  { name: "Northern Shoveler", scientific: "Spatula clypeata", description: "Spoon-shaped beak filters algae and tiny organisms from the bacteria-rich water.", image: "bird3.jpg", adaptation: "Specialized filter beak" },
+  { name: "Greater Flamingo", scientific: "Phoenicopterus roseus", description: "Visits when the lake turns pink from microbes – upside-down filter feeding master!", image: "bird4.jpg", adaptation: "Inverted filter feeding" },
+  { name: "Garganey", scientific: "Spatula querquedula", description: "Small migratory duck that feeds directly on the bacteria-rich surface water.", image: "bird5.jpg", adaptation: "Surface feeding" },
+  { name: "Common Teal", scientific: "Anas crecca", description: "Tiny duck that dives and feeds in the extreme alkaline conditions.", image: "bird6.jpg", adaptation: "Diving efficiency" },
+  { name: "Little Grebe", scientific: "Tachybaptus ruficollis", description: "Dives deep into the hypersaline layers to hunt prey that survives the chemistry.", image: "bird7.jpg", adaptation: "Deep diving" }
+];
+
+const MICROBES = [
+  { name: "Spirulina Bloom", role: "Primary Producer", description: "Turns the lake green – main food for flamingos and ducks.", image: "bact1.jpg" },
+  { name: "Cyanobacteria", role: "Microscopic Life", description: "Microscopic view – thrives at pH 11 and high salt.", image: "bact2.jpg" },
+  { name: "Haloalkaliphilic Bacteria", role: "Chemical Processor", description: "Only survives in super salty + alkaline water like Lonar.", image: "bact3.jpg" },
+  { name: "Arthrospira (Spirulina)", role: "Foundation Species", description: "The exact species that paints the lake and feeds the birds.", image: "bact4.jpg" }
+];
+
+const VIEWS = [
+  { name: "Main View", image: "lonar1.jpg" },
+  { name: "Pink Phase", image: "lonar2.jpg" },
+  { name: "Aerial Shot", image: "lonar3.jpg" },
+  { name: "Emerald Waters", image: "lonar4.jpg" }
+];
+
+const Image = ({ src, alt, className }: { src: string; alt: string; className?: string }) => (
+  <div className={cn("relative overflow-hidden bg-neutral-900", className)}>
+    <img src={src} alt={alt} loading="lazy" className="w-full h-full object-cover" />
+  </div>
+);
+
+export default function App() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const [activeBird, setActiveBird] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 1000);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <div className="bg-black min-h-screen font-sans selection:bg-emerald-500 selection:text-black">
+      <motion.div className="fixed top-0 left-0 right-0 h-1 bg-emerald-500 origin-left z-[100]" style={{ scaleX }} />
+      
+      {/* Navbar */}
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+        <div className="bg-black/20 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center gap-8">
+          <a href="#home" className="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors">Home</a>
+          <a href="#overview" className="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors">Overview</a>
+          <a href="#chemistry" className="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors">Chemistry</a>
+          <a href="#wildlife" className="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors">Wildlife</a>
+          <a href="#podcast" className="text-xs font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors">Podcast</a>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden bg-black">
+        <Image src="lonar1.jpg" alt="Lonar Crater" className="absolute inset-0 opacity-60" />
+        <div className="relative z-10 text-center px-4">
+          <span className="text-emerald-400 font-mono text-sm tracking-widest uppercase mb-4 block">Meteor Impact Crater • Maharashtra</span>
+          <h1 className="text-[10vw] font-black leading-[0.85] uppercase tracking-tighter text-white">LONAR <span className="text-emerald-500">CRATER</span></h1>
+        </div>
+      </section>
+
+      {/* Wildlife */}
+      <section id="wildlife" className="py-32 px-6 max-w-7xl mx-auto">
+        <h2 className="text-5xl md:text-7xl font-bold mb-20 text-white">Avian <span className="text-emerald-500">Adaptation</span></h2>
+        <div className="grid lg:grid-cols-12 gap-12">
+          <div className="lg:col-span-4 space-y-4">
+            {BIRDS.map((bird, i) => (
+              <button key={i} onClick={() => setActiveBird(i)} className={cn("w-full text-left p-6 rounded-xl border transition-all", activeBird === i ? "bg-emerald-500 text-black" : "bg-white/5 border-white/10 text-white")}>
+                <div className="text-xl font-bold">{bird.name}</div>
+              </button>
+            ))}
+          </div>
+          <div className="lg:col-span-8">
+            <div className="bg-white/5 rounded-3xl overflow-hidden border border-white/10">
+              <Image src={BIRDS[activeBird].image} alt={BIRDS[activeBird].name} className="aspect-video" />
+              <div className="p-10">
+                <h3 className="text-4xl font-bold mb-4 text-white">{BIRDS[activeBird].name}</h3>
+                <p className="text-xl text-white/70 leading-relaxed">{BIRDS[activeBird].description}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Podcast */}
+      <section id="podcast" className="py-32 bg-emerald-500 text-black">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-6xl md:text-8xl font-black uppercase mb-12">THE PODCAST</h2>
+          <div className="bg-black/5 p-8 rounded-3xl border border-black/10 max-w-2xl">
+            <h2 className="text-2xl font-bold mb-4">Podcast: Lonar’s Alkaline Avengers</h2>
+            <p>Listen to our podcast on how birds and microbes adapt to Lonar's extreme water.</p>
+            <audio controls style={{ width: '100%', margin: '20px 0', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0,0,0,0.2)' }}>
+              <source src="lonar-podcast.mp3" type="audio/mpeg" />
+              Your browser does not support audio.
+            </audio>
+          </div>
+        </div>
+      </section>
+
+      {/* Article Section */}
+      <section className="py-32 bg-white text-black">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-4xl font-bold mb-12">How Lonar Crater’s Waterbirds Conquer Extreme Alkalinity</h2>
+          <div className="prose prose-lg font-serif">
+             <div className="my-12 grid md:grid-cols-2 gap-8 items-center">
+              <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg">
+                <Image src="bird4.jpg" alt="Greater Flamingo Adaptation" className="w-full h-auto" />
+                <div className="p-4 bg-gray-50 text-xs text-gray-500 italic">
+                  The Greater Flamingo (Phoenicopterus roseus) uses specialized filter-feeding and salt excretion to thrive in Lonar's alkaline waters.
+                </div>
+              </div>
+              <ul className="space-y-4 text-sm">
+                <li><strong>Salt glands near eyes:</strong> Act like extra kidneys to remove salt.</li>
+                <li><strong>Special beaks:</strong> Flamingos filter algae while pushing out caustic water.</li>
+                <li><strong>Tough leg skin:</strong> Thick scales prevent chemical burns.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
